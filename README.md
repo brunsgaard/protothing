@@ -2,6 +2,7 @@
 
 New PII message that can be added as nested message and field to original message type
 
+descriptorpb.DescriptorProto
 ```
 
 field: {
