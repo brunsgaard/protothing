@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+	"strconv"
+	"strings"
 
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
@@ -18,9 +20,6 @@ func registerproto() {
 	data, _ := os.ReadFile("addressbook.bin")
 	fds := &descriptorpb.FileDescriptorSet{}
 	proto.Unmarshal(data, fds)
-	fmt.Println(prototext.Format(fds))
-	println()
-	println()
 	for _, f := range fds.GetFile() {
 		fd, err := protodesc.NewFile(f, protoregistry.GlobalFiles)
 		if err != nil {
@@ -31,41 +30,33 @@ func registerproto() {
 
 }
 
-func rec(md protoreflect.MessageDescriptor) *descriptorpb.DescriptorProto {
-
-	// TODO create message proto
-	rv := &descriptorpb.DescriptorProto{}
-
-	// iterate over fields only add to message proto if pii or
+func BuildPIIMessageType(md protoreflect.MessageDescriptor, descriptorFqdn string) *descriptorpb.DescriptorProto {
+	rv := &descriptorpb.DescriptorProto{Name: proto.String(descriptorFqdn[strings.LastIndex(descriptorFqdn, ".")+1:])}
+	// Iterate over each field in message, add field to rv if field (directly or
+	// recursivly) contains PII tag
 	for i := 0; i < md.Fields().Len(); i++ {
 		fd := md.Fields().Get(i)
-
 		switch fd.Kind() {
-		case protoreflect.StringKind:
-			// Check if pii, if Pii add to return type
+		case protoreflect.StringKind, protoreflect.BytesKind:
+			// Check if field contains PII, if this is the case clear Options and add
+			// field to rv
 			opts, ok := proto.GetExtension(fd.Options(), bqproto.E_Bigquery).(*bqproto.BigQueryFieldOptions)
 			if ok && opts != nil && opts.GetPolicyTags() == "pii" {
-
-				// Fix up field
 				field := protodesc.ToFieldDescriptorProto(fd)
 				field.Options = nil
 				rv.Field = append(rv.Field, field)
-
 			}
 		case protoreflect.MessageKind:
-			nestedMessage := rec(fd.Message())
-			if nestedMessage != nil {
-				name := fd.Message().Name() + "PII"
-
-				// Add nested field
-				nestedMessage.Name = proto.String(string(name))
-				rv.NestedType = append(rv.NestedType, nestedMessage)
-
-				// Add field
+			// If field is kind message, call BuildPIIMessageType recursivly
+			messageName := string(fd.Message().Name()) + strconv.Itoa(i)
+			fqdnName := descriptorFqdn + "." + messageName
+			messageType := BuildPIIMessageType(fd.Message(), fqdnName)
+			if len(messageType.Field) != 0 {
+				// Add message type as nested message to rv and add field to rv
+				rv.NestedType = append(rv.NestedType, messageType)
 				field := protodesc.ToFieldDescriptorProto(fd)
-				field.TypeName = proto.String("." + string(fd.Parent().FullName()+"."+protoreflect.FullName(name)))
+				field.TypeName = proto.String(fqdnName)
 				rv.Field = append(rv.Field, field)
-
 			}
 		}
 	}
@@ -79,8 +70,6 @@ func main() {
 		panic(err)
 	}
 	m := desc.(protoreflect.MessageDescriptor)
-	rv := rec(m)
-	fmt.Println("New PII message that can be added as nestedmessage and field to original message type")
+	rv := BuildPIIMessageType(m, ".tutorial.v1.Address.Metadata.PIIFields")
 	fmt.Println(prototext.Format(rv))
-
 }

@@ -32,7 +32,19 @@ message Person {
 
   message PhoneNumber {
     string number = 1 [(gen_bq_schema.bigquery) = { policy_tags : "pii" } ];
+    PhoneNumber phone = 2;
+
+    message PhoneNumber {
+      string number = 1 [(gen_bq_schema.bigquery) = { policy_tags : "pii" } ];
+    }
+
   }
+
+  message Trololo {
+    string troll = 1;
+  }
+
+  Trololo troll = 4;
 
   // We want to build a nested message
   // message Pii {

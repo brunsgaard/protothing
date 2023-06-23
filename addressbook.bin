@@ -1,11 +1,17 @@
 
-’
-addressbook.prototutorialbq_field.proto"¡
+Õ
+addressbook.prototutorialbq_field.proto"ä
 Person
 name (	Rname
 email (	Bê?2piiRemail2
-phone (2.tutorial.Person.PhoneNumberRphone/
+phone (2.tutorial.Person.PhoneNumberRphone.
+troll (2.tutorial.Person.TrololoRtroll 
 PhoneNumber 
-number (	Bê?2piiRnumber"7
+number (	Bê?2piiRnumber>
+phone (2(.tutorial.Person.PhoneNumber.PhoneNumberRphone/
+PhoneNumber 
+number (	Bê?2piiRnumber
+Trololo
+troll (	Rtroll"7
 AddressBook(
 people (2.tutorial.PersonRpeoplebproto3
