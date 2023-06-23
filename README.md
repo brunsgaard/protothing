@@ -64,8 +64,9 @@ file: {
   }
   syntax: "proto3"
 }
+```
 
-New PII message that can be added as nestedmessage and field to original message type
+New PII message that can be added as nested message and field to original message type
 
 field: {
   name: "email"
