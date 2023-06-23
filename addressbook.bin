@@ -1,0 +1,11 @@
+
+’
+addressbook.prototutorialbq_field.proto"¡
+Person
+name (	Rname
+email (	Bê?2piiRemail2
+phone (2.tutorial.Person.PhoneNumberRphone/
+PhoneNumber 
+number (	Bê?2piiRnumber"7
+AddressBook(
+people (2.tutorial.PersonRpeoplebproto3
