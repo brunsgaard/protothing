@@ -1,5 +1,37 @@
 # protothing
 
+New PII message that can be added as nested message and field to original message type
+
+```
+
+field: {
+  name: "email"
+  number: 2
+  label: LABEL_OPTIONAL
+  type: TYPE_STRING
+  json_name: "email"
+}
+field: {
+  name: "phone"
+  number: 3
+  label: LABEL_OPTIONAL
+  type: TYPE_MESSAGE
+  type_name: ".tutorial.Person.PhoneNumberPII"
+  json_name: "phone"
+}
+nested_type: {
+  name: "PhoneNumberPII"
+  field: {
+    name: "number"
+    number: 1
+    label: LABEL_OPTIONAL
+    type: TYPE_STRING
+    json_name: "number"
+  }
+}
+```
+
+Original FDS
 
 ```
 file: {
@@ -66,31 +98,3 @@ file: {
 }
 ```
 
-New PII message that can be added as nested message and field to original message type
-
-field: {
-  name: "email"
-  number: 2
-  label: LABEL_OPTIONAL
-  type: TYPE_STRING
-  json_name: "email"
-}
-field: {
-  name: "phone"
-  number: 3
-  label: LABEL_OPTIONAL
-  type: TYPE_MESSAGE
-  type_name: ".tutorial.Person.PhoneNumberPII"
-  json_name: "phone"
-}
-nested_type: {
-  name: "PhoneNumberPII"
-  field: {
-    name: "number"
-    number: 1
-    label: LABEL_OPTIONAL
-    type: TYPE_STRING
-    json_name: "number"
-  }
-}
-```
